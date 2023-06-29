@@ -75,19 +75,25 @@ for x in range( len(im_bin) ):
             
             pinta = False
             # cima, baixo = 0 , 0
-            # i = 0
+            i = 0
             while (cima == 0 or baixo == 0):
                 # Try catch pra não explodir quando próximo às extremidades
                 try:
                     cima = im_bin[ x + i , offset ]
-                    baixo = im_bin [x - i , offset ]
+                    if cima == 0:
+                        xcima = x + i
                 except:
-                    cima, baixo = 0 , 0
-                
-                
-                
+                    cima = 0
+                try:
+                    baixo = im_bin [x - i , offset ]
+                    if baixo == 0:
+                        xbaixo = x + i
+                except:
+                    baixo = 0         
+                    
                 if cima == 0 or baixo == 0:
                     continue
+                
                 pinta = False
                 break;
             
