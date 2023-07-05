@@ -14,7 +14,7 @@ JSONPATH = './'
 
 # Imagem passada pelo usuário
 # IMAGEM = sys.argv[1]
-IMAGEM = './exams/ofc9.jpeg'
+IMAGEM = './exams/ofc10.jpeg'
 img = imread(IMAGEM, as_gray=True)
 
 # Threshold idela para as imagens
@@ -57,45 +57,45 @@ for x in range( len(im_bin) ):
         if countPreto > tolerancia and countPreto < tolerancia * 4:
             offset = y - int(countPreto/2)
             
-            # pinta = True
+            pinta = True
             
             # Verificar a área ao redor do ponto encontrado
-            # for i in range(tolerancia):
-            #     # Try catch pra não explodir quando próximo às extremidades
-            #     try:
-            #         cima = im_bin[ x + i , offset ]
-            #         baixo = im_bin [x - i , offset ]
-            #     except:
-            #         cima, baixo = 0 , 0
-                
-            #     if cima == 0 and baixo == 0:
-            #         continue
-            #     pinta = False
-            #     break;
-            
-            pinta = False
-            # cima, baixo = 0 , 0
-            i = 0
-            while (cima == 0 or baixo == 0):
+            for i in range(tolerancia):
                 # Try catch pra não explodir quando próximo às extremidades
                 try:
                     cima = im_bin[ x + i , offset ]
-                    if cima == 0:
-                        xcima = x + i
-                except:
-                    cima = 0
-                try:
                     baixo = im_bin [x - i , offset ]
-                    if baixo == 0:
-                        xbaixo = x + i
                 except:
-                    baixo = 0         
-                    
-                if cima == 0 or baixo == 0:
-                    continue
+                    cima, baixo = 0 , 0
                 
+                if cima == 0 and baixo == 0:
+                    continue
                 pinta = False
                 break;
+            
+            # pinta = False
+            # # cima, baixo = 0 , 0
+            # i = 0
+            # while (cima == 0 or baixo == 0):
+            #     # Try catch pra não explodir quando próximo às extremidades
+            #     try:
+            #         cima = im_bin[ x + i , offset ]
+            #         if cima == 0:
+            #             xcima = x + i
+            #     except:
+            #         cima = 0
+            #     try:
+            #         baixo = im_bin [x - i , offset ]
+            #         if baixo == 0:
+            #             xbaixo = x + i
+            #     except:
+            #         baixo = 0         
+                    
+            #     if cima == 0 or baixo == 0:
+            #         continue
+                
+            #     pinta = False
+            #     break;
             
             
             
@@ -166,7 +166,7 @@ Image.fromarray(np.uint8(im_bin)).save(IMRPATH + 'testeb.png')
 
 
 
-print (pontos)
+# print (pontos)
 
 def isPointNear(point, newpoints):
     
@@ -182,9 +182,9 @@ newpontos = []
 pointsnear = True
 for ponto in pontos:
     if isPointNear(ponto,newpontos):
-        print(ponto, ": Y")
+        # print(ponto, ": Y")
         continue
-    print(ponto, ": N")
+    # print(ponto, ": N")
     newpontos.append(ponto)
 
 
@@ -206,4 +206,30 @@ json_object_result = json.dumps(jsonpontos, indent=4)
 with open(JSONPATH + '/results.json', 'w') as outfile:
         outfile.write(json_object_result)
 
-print('ok')
+
+QUANTQUESTOES = int(sys.argv[2])
+# QUANTQUESTOES = 6
+
+divResV = int((height - height/10 - tolerancia)/QUANTQUESTOES)
+divResH = int((width - width/10 - tolerancia)/5)
+
+posRes = ['a','b','c','d','e']
+respostas = {}
+for i in range(QUANTQUESTOES):
+    respostas[i+1] = []
+
+
+for ponto in newpontos:
+    for i in range(QUANTQUESTOES+1):
+        if ponto[0] > i*divResV:
+            continue
+        # print(i, ponto[0], end = ' - ')
+        for j in range(5):
+            if ponto[1] < (j+1)*divResH:
+                # print(posRes[j], ponto[1])
+                respostas[i].append(posRes[j])
+                break
+        break
+        
+print(respostas)
+          
